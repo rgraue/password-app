@@ -18,12 +18,12 @@ pub struct Pass {
 }
 
 pub fn read_pass_file(client_id: &String) -> Result<Pass, Box<dyn std::error::Error>> {
-    let mut abs_root = std::env::current_exe()?;
-    abs_root.pop();
-    abs_root.push(client_id.clone() + ".json");
+    // let mut abs_root = std::env::current_exe()?;
+    // abs_root.pop();
+    // abs_root.push(client_id.clone() + ".json");
 
     // Open the file
-    let file = File::open(abs_root)?;
+    let file = File::open("/server/store/".to_owned() + client_id + ".json")?;
 
     // Create a buffered reader for efficient reading
     let reader = BufReader::new(file);
@@ -31,15 +31,16 @@ pub fn read_pass_file(client_id: &String) -> Result<Pass, Box<dyn std::error::Er
     // Deserialize the JSON directly from the reader into your struct
     let passfile: Pass = serde_json::from_reader(reader)?;
 
+    println!("{}", "passfile found");
     return Ok(passfile);
 }
 
 pub fn write_pass_file(client_id: &String, data: &HashMap<String, PassInfo>) -> Result<bool, std::io::Error> {
-    let mut abs_root = std::env::current_exe()?;
-    abs_root.pop();
-    abs_root.push(client_id.clone() + ".json");
+    // let mut abs_root = std::env::current_exe()?;
+    // abs_root.pop();
+    // abs_root.push(client_id.clone() + ".json");
 
-    let file = File::create(abs_root)?;
+    let file = File::create("/server/store/".to_owned() + client_id + ".json")?;
     let writer = BufWriter::new(file);
 
     return match serde_json::to_writer(writer, &data) {

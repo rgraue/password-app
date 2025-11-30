@@ -17,3 +17,13 @@ class PassInfo(BaseModel):
     username: str
     password: str
     url: str | None
+
+class PassFileCreationReq(BaseModel):
+    client_id: str
+    password: str
+
+# Errors
+
+class NotFoundException(Exception):
+    def __init__(self, message: str = 'resource not found.'):
+        super.__init__(message)

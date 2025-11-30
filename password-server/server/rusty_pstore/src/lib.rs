@@ -164,7 +164,10 @@ mod rusty_pstore {
 
         let pf = match read_pass_file(&String::from(client_id)) {
             Ok(result) => result.data,
-            Err(_) => return Vec::new(),
+            Err(e) => {
+                println!("{:?}", e);
+                return Vec::new()
+            }
         };
 
         let mut pass_details: Vec<String> = Vec::new();

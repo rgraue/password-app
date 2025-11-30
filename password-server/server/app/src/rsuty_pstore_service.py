@@ -1,7 +1,8 @@
 import rusty_pstore
 import base64
+from typing import Optional
 
-from models import TokenData, PassInfo
+from models import TokenData, PassInfo, NotFoundException
 
 def decode_base64(base64_s: str):
     return base64.b64decode(base64_s.encode()).decode()
@@ -13,6 +14,7 @@ def login(base64_client_id: str, base64_password: str):
     plaintext_pwd = decode_base64(base64_password)
 
     login_attempt: list[str] = rusty_pstore.login(base64_client_id, plaintext_pwd)
+    print(login_attempt)
 
     if login_attempt is None or len(login_attempt) != 2:
         raise RuntimeError(f'Login attempt failed for {decode_base64(base64_client_id)}')
@@ -54,9 +56,10 @@ def get_pass_info(token: TokenData, base64_looking_for: str):
         token.iv, 
         plaintext_looking_for
     )
-    
+
     if details is None or len(details) < 3:
-        raise RuntimeError(f'Error retrieving pass info for {token.client_id}: {plaintext_looking_for}')
+        print(f'Error retrieving pass info for {token.client_id}: {plaintext_looking_for}')
+        raise NotFoundException()
     
     return PassInfo(
         name=plaintext_looking_for,
@@ -64,3 +67,9 @@ def get_pass_info(token: TokenData, base64_looking_for: str):
         password=details[1],
         url=details[2]
     )
+
+def init_pass_file(base64_client_id_to_make: str, base64_password: str):
+    plaintext_password = decode_base64(base64_password)
+
+    success: Optional[bool] = rusty_pstore.init_pass_file(base64_client_id_to_make, plaintext_password)
+    return success

@@ -2,8 +2,22 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - "80:80" # Map host port 80 to container port 80
+      - "3000:3000"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf # Mount custom Nginx config
       - ./ui/public:/usr/share/nginx/public # Mount static content
     restart: always
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - JWT_SECRET=supersecretpassword
+    entrypoint: ["python", "app/src/main.py"]
+    volumes:
+      - pwd-store:/server/store
+    restart: always
+volumes:
+  pwd-store:

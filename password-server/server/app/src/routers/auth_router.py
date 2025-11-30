@@ -12,5 +12,4 @@ authRouter = APIRouter(
 async def oath2_login(
     form: Annotated[OAuth2ClientCredentialsRequestForm, Depends()]
 ):
-    print(form.__dict__)
     return login(form.client_id, form.client_secret)
